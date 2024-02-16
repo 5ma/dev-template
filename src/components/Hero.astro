@@ -1,0 +1,27 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Props = HTMLAttributes<'header'> & {
+  title: string;
+  description?: string | undefined;
+};
+
+const { class: className, title, description, ...props } = Astro.props;
+---
+
+<div x-data="hero" {...props} class:list={['my-12', className]}>
+  <h1 class="text-4xl font-bold kerning-all">
+    {title}
+  </h1>
+  {description && <p class="mt-8 text-xl">{description}</p>}
+</div>
+
+<script>
+  import Alpine from 'alpinejs';
+
+  Alpine.data('hero', () => ({
+    init() {
+      console.log('hero component: init');
+    },
+  }));
+</script>

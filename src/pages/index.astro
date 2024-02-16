@@ -1,0 +1,52 @@
+---
+import { getCollection } from 'astro:content';
+import Hero from '../components/Hero.astro';
+import Layout from '../layouts/Layout.astro';
+
+const title = 'ウェブサイト構築のためのモダンなフロントエンド開発環境';
+const description =
+  'sdenvは、ウェブアプリケーションではなくウェブサイトを開発するためのベストプラクティスに基づいて構成されたフロントエンド開発環境です。やりすぎないちょうどいい使い勝手の実現を念頭に置いて設計されている、より多くのウェブサイト開発者のためのツールキットです。';
+
+const newsEntries = (await getCollection('news'))
+  .toSorted((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf())
+  .toReversed();
+---
+
+<Layout isHome tagline={title} description={description}>
+  <main class="wrapper">
+    <Hero title={title} description={description} />
+
+    <section>
+      <ul class="auto-grid-80 mt-4 gap-x-8 gap-y-12">
+        {
+          ['Astro', 'Tailwind CSS', 'Alpine.js', 'Prettier / ESLint'].map((label) => (
+            <li>
+              <div class="aspect-video rounded-3xl bg-zinc-200" />
+              <p class="mt-3 text-center">{label}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="mt-16 text-2xl font-bold">お知らせ</h2>
+      <ol class="mt-6 list-disc space-y-1 ps-8">
+        {
+          newsEntries.map((entry) => (
+            <li>
+              <a
+                class="text-sky-600 hover:text-sky-800 hover:underline"
+                href={`/news/${entry.slug}/`}
+              >
+                {entry.data.title}
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <div x-data="example(100)"></div>
+  </main>
+</Layout>

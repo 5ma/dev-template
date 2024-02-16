@@ -1,0 +1,113 @@
+---
+import appleTouchIconImage from '../assets/apple-touch-icon.png';
+import faviconImage from '../assets/favicon.svg';
+import defaultOpenGraphImage from '../assets/opengraph-image.png';
+import PageHeader from '../components/PageHeader.astro';
+import { SITE_LANG, SITE_REGION, SITE_TITLE, SITE_TWITTER_ID } from '../consts';
+
+interface SharedProps {
+  isHome?: false | undefined;
+  is404?: false | undefined;
+  title: string;
+  description?: string | undefined;
+  ogType?: 'website' | 'article' | undefined;
+  ogImage?: string | undefined;
+}
+
+type GeneralProps = SharedProps;
+
+type HomeProps = Omit<SharedProps, 'isHome' | 'title'> & {
+  isHome: true;
+  tagline: string;
+};
+
+type NotFoundProps = Omit<SharedProps, 'is404'> & {
+  is404: true;
+};
+
+type Props = GeneralProps | HomeProps | NotFoundProps;
+
+const isHome = Astro.props.isHome === true;
+const is404 = Astro.props.is404 === true;
+
+const { description, ogType = 'website', ogImage = defaultOpenGraphImage.src } = Astro.props;
+
+const resolvedOgImage = new URL(ogImage, Astro.site);
+
+let canonicalURL: URL | null = null;
+if (!is404) {
+  canonicalURL = new URL(Astro.url.pathname, Astro.site);
+}
+---
+
+<!--
+  https://bugs.chromium.org/p/chromium/issues/detail?id=1378462
+  https://schepp.dev/posts/smooth-scrolling-and-page-search/
+-->
+<html
+  class="break-words underline-offset-[0.125em] kerning-none [line-break:normal] focus-within:motion-safe:scroll-smooth"
+  lang={SITE_LANG}
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title
+      set:html={[!isHome && Astro.props.title, SITE_TITLE, isHome && Astro.props.tagline]
+        .filter(Boolean)
+        .join(' &#8211; ')}
+    />
+
+    <script src="../scripts/main.ts"></script>
+
+    {description && <meta name="description" content={description} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content={`@${SITE_TWITTER_ID}`} />
+    <meta name="twitter:title" content={isHome ? SITE_TITLE : Astro.props.title} />
+
+    <meta property="og:title" content={isHome ? Astro.props.tagline : Astro.props.title} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:image" content={resolvedOgImage} />
+    {canonicalURL && <meta property="og:url" content={canonicalURL} />}
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:site_name" content={SITE_TITLE} />
+    <meta property="og:locale" content={`${SITE_LANG}_${SITE_REGION}`} />
+
+    <link rel="apple-touch-icon" href={appleTouchIconImage.src} />
+    {canonicalURL && <link rel="canonical" href={canonicalURL} />}
+    <link rel="icon" href={faviconImage.src} type="image/svg+xml" />
+  </head>
+
+  <!--
+    use `100svh` instead of `100dvh`
+    https://piccalil.li/blog/a-more-modern-css-reset/#:~:text=I%20like%20a,to%20change%20it!
+  -->
+  <body class="min-h-svh bg-white text-zinc-900">
+    <PageHeader isHome={isHome} />
+
+    <slot />
+
+    {/* https://css-tricks.com/a-clever-sticky-footer-technique/ */}
+    <footer class="sticky top-full mt-12 bg-zinc-900 py-2 text-zinc-100/80">
+      <div class="wrapper">
+        <p class="flex flex-wrap justify-center gap-x-6">
+          {
+            [
+              ['ホーム', '/'],
+              ['はじめに', '/about/'],
+              ['お知らせ', '/news/'],
+              ['実績', '/work/'],
+            ].map(([label, href]) => (
+              <a class="py-2 text-sm transition hover:text-zinc-100" href={href}>
+                {label}
+              </a>
+            ))
+          }
+        </p>
+      </div>
+    </footer>
+
+    {/* https://atfzl.com/don-t-attach-tooltips-to-document-body */}
+    <div id="js-overlay-container"></div>
+  </body>
+</html>
