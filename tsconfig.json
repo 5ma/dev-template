@@ -1,7 +1,11 @@
 {
   "extends": "astro/tsconfigs/strictest",
   "compilerOptions": {
-    "types": ["vitest/importMeta"]
+    "types": ["vitest/importMeta"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
   "exclude": ["dist"] // https://github.com/withastro/language-tools/issues/643#issuecomment-1699486909
 }
