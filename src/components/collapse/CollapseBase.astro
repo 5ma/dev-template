@@ -1,0 +1,70 @@
+---
+import uniqueId from 'lodash.uniqueid';
+
+interface Props {
+  /** アコーディオン開閉時のduration(ms) */
+  duration?: number;
+  headingTag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6';
+  /** id属性に付与するprefix名。例：prefix="faq" id="faq-trigger-1" */
+  prefix?: string;
+  /** trueにすると最初からアコーディオンが開いた状態になる */
+  open?: boolean;
+  class?: string;
+}
+
+const {
+  duration = 500,
+  headingTag: HeadingTag = 'h3',
+  prefix = 'collapse',
+  open = false,
+  class: className,
+} = Astro.props;
+
+// ユニークID取得
+const collapseId: string = uniqueId();
+// trigger Elementに付与するid属性
+const triggerId = `${prefix}-trigger-${collapseId}`;
+// content Elementに付与するid属性
+const contentId = `${prefix}-content-${collapseId}`;
+---
+
+<div class:list={[className, 'relative']} x-data={`collapse(${open})`}>
+  <HeadingTag>
+    <button
+      type="button"
+      id={triggerId}
+      @click="toggle"
+      :aria-expanded="expanded"
+      aria-controls={contentId}
+    >
+      <slot name="header" />
+    </button>
+  </HeadingTag>
+  <div
+    id={contentId}
+    aria-labelledby={triggerId}
+    x-show="expanded"
+    {...{ [`x-collapse.duration.${duration}ms`]: '' }}
+  >
+    <slot name="contents" />
+  </div>
+</div>
+
+<script>
+  // eslint-disable-next-line import/no-named-as-default
+  import collapse from '@alpinejs/collapse';
+  import Alpine from 'alpinejs';
+
+  Alpine.plugin(collapse);
+  Alpine.data('collapse', (open: boolean) => {
+    return {
+      expanded: open,
+      init() {
+        console.debug('collapse');
+      },
+      toggle() {
+        this.expanded = !this.expanded;
+      },
+    };
+  });
+</script>
