@@ -51,5 +51,11 @@
     "npm": "10"
   },
   "packageManager": "npm@10.4.0",
-  "private": true
+  "private": true,
+  "volta": {
+    "node": "20.11.1"
+  },
+  "devDependencies": {
+    "postcss-preset-env": "9.4.0"
+  }
 }
