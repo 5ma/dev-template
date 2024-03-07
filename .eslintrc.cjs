@@ -26,6 +26,8 @@ module.exports = {
 
     // TypeScript already catches unused variables
     '@typescript-eslint/no-unused-vars': 'off',
+    // 型定義をinterfaceかtypeのどちらかを使うかを統一するためのルールを無視する
+    '@typescript-eslint/consistent-type-definitions': 'off',
 
     'import/no-named-as-default': 'off',
     'import/no-unresolved': [
