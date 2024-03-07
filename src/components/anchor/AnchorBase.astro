@@ -14,6 +14,7 @@ const isExternalLink = (href: string): boolean => {
 };
 
 // 外部リンクの場合、target="_blank"とrel="noopener"を設定
+// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 const target = userDefinedTarget || (isExternalLink(href) ? '_blank' : undefined);
 const rel = target === '_blank' ? 'noopener' : undefined;
 ---
