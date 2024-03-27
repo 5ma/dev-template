@@ -1,0 +1,26 @@
+---
+import { Picture } from 'astro:assets';
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props {
+  src: string;
+  alt?: string;
+  loading?: 'eager' | 'lazy';
+  class?: string;
+  fetchpriority?: 'high' | 'low' | 'auto';
+  pictureAttributes?: HTMLAttributes<'picture'>;
+}
+
+const { src, loading = 'lazy', alt = '', fetchpriority, pictureAttributes }: Props = Astro.props;
+---
+
+<Picture
+  formats={['avif', 'webp']}
+  quality={70}
+  {src}
+  {alt}
+  {loading}
+  fetchpriority={fetchpriority || (loading === 'eager' ? 'high' : undefined)}
+  decoding="async"
+  {pictureAttributes}
+/>
