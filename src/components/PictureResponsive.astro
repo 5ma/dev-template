@@ -1,0 +1,32 @@
+---
+import { Picture } from 'astro-imagetools/components';
+import { theme } from '../tailwind-variables';
+import type { LoadingAttributes } from '@/types/';
+
+interface Props {
+  srcDesktop: string;
+  srcMobile: string;
+  loading?: LoadingAttributes;
+  alt?: string;
+  class?: string;
+}
+
+const { srcDesktop, srcMobile, loading = 'lazy', alt = '', class: className }: Props = Astro.props;
+---
+
+<Picture
+  src={srcMobile}
+  {alt}
+  {loading}
+  artDirectives={[
+    {
+      src: srcDesktop,
+      media: `(min-width: ${theme.screens.sm})`,
+    },
+  ]}
+  attributes={{
+    img: {
+      class: className,
+    },
+  }}
+/>
