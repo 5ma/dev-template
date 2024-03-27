@@ -1,19 +1,28 @@
 ---
 import { Picture } from 'astro:assets';
 import type { HTMLAttributes } from 'astro/types';
+import type { LoadingAttributes, FetchpriorityAttributes } from '@/types/';
 
 interface Props {
   src: string;
   alt?: string;
-  loading?: 'eager' | 'lazy';
+  loading?: LoadingAttributes;
+  fetchpriority?: FetchpriorityAttributes;
   class?: string;
-  fetchpriority?: 'high' | 'low' | 'auto';
   pictureAttributes?: HTMLAttributes<'picture'>;
 }
 
-const { src, loading = 'lazy', alt = '', fetchpriority, pictureAttributes }: Props = Astro.props;
+const {
+  src,
+  loading = 'lazy',
+  alt = '',
+  fetchpriority,
+  class: className,
+  pictureAttributes,
+}: Props = Astro.props;
 ---
 
+{/* decoding="async" は自動で付与されます */}
 <Picture
   formats={['avif', 'webp']}
   quality={70}
@@ -21,6 +30,6 @@ const { src, loading = 'lazy', alt = '', fetchpriority, pictureAttributes }: Pro
   {alt}
   {loading}
   fetchpriority={fetchpriority || (loading === 'eager' ? 'high' : undefined)}
-  decoding="async"
+  class={className}
   {pictureAttributes}
 />
