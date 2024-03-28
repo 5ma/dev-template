@@ -1,11 +1,24 @@
 ---
 import { getCollection } from 'astro:content';
+import img1 from '../assets/1574303866_9f5bb0dd.jpg';
+import Sprite from '../assets/svg/symbol/face_FILL0_wght200_GRAD0_opsz24.svg?url';
 import Hero from '../components/Hero.astro';
 import Layout from '../layouts/Layout.astro';
+import AnchorBase from '@/components/anchor/AnchorBase.astro';
+import CollapseBase from '@/components/collapse/CollapseBase.astro';
+import PictureBase from '@/components/PictureBase.astro';
+import PictureResponsive from '@/components/PictureResponsive.astro';
+import TabBase from '@/components/tab/TabBase.astro';
+import TabButtonBase from '@/components/tab/TabButtonBase.astro';
+import TabPanelBase from '@/components/tab/TabPanelBase.astro';
 
 const title = 'ウェブサイト構築のためのモダンなフロントエンド開発環境';
 const description =
   'sdenvは、ウェブアプリケーションではなくウェブサイトを開発するためのベストプラクティスに基づいて構成されたフロントエンド開発環境です。やりすぎないちょうどいい使い勝手の実現を念頭に置いて設計されている、より多くのウェブサイト開発者のためのツールキットです。';
+
+console.log('Sprite', Sprite);
+
+const colorHex: Color = '#ffffff';
 
 const newsEntries = (await getCollection('news'))
   .toSorted((a, b) => a.data.pubDate.valueOf() - b.data.pubDate.valueOf())
@@ -15,7 +28,47 @@ const newsEntries = (await getCollection('news'))
 <Layout isHome tagline={title} description={description}>
   <main class="wrapper">
     <Hero title={title} description={description} />
-
+    <svg class="aspect-square w-full">
+      <use href={Sprite + '#nico'}></use>
+    </svg>
+    <PictureBase src={img1} class="bg-pink-500" />
+    <TabBase initialActiveId="label-1">
+      <Fragment slot="tab">
+        <TabButtonBase id="label-1" controlId="panel-1" class="rounded-sm bg-yellow-100">
+          タブボタン1
+        </TabButtonBase>
+        <TabButtonBase id="label-2" controlId="panel-2"> タブボタン2 </TabButtonBase>
+        <TabButtonBase id="label-3" controlId="panel-3"> タブボタン2 </TabButtonBase>
+      </Fragment>
+      <Fragment slot="panel">
+        <TabPanelBase id="panel-1" labelId="label-1">タブパネル1枚目</TabPanelBase>
+        <TabPanelBase id="panel-2" labelId="label-2">タブパネル2枚目</TabPanelBase>
+        <TabPanelBase id="panel-3" labelId="label-3">タブパネル2枚目</TabPanelBase>
+      </Fragment>
+    </TabBase>
+    <PictureResponsive
+      srcDesktop="/src/assets/1574303866_9f5bb0dd.jpg"
+      srcMobile="/src/assets/20130226_dummyimage.webp"
+    />
+    <CollapseBase>
+      <Fragment slot="header">header</Fragment>
+      <Fragment slot="contents">
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは<br />
+        こんにちは
+      </Fragment>
+    </CollapseBase>
+    <AnchorBase href="https://developer.mozilla.org/ja/docs/Web/HTML/Global_attributes/hidden"
+      >リンクだよーーーー</AnchorBase
+    >
+    {colorHex}
     <section>
       <ul class="auto-grid-80 mt-4 gap-x-8 gap-y-12">
         {

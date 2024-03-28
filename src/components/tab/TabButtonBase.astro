@@ -1,0 +1,26 @@
+---
+interface Props {
+  id: string;
+  controlId: string;
+  disabled?: boolean;
+  class?: string;
+  children: any;
+}
+
+const { id, controlId, disabled, class: className } = Astro.props;
+---
+
+<button
+  role="tab"
+  {id}
+  aria-controls={controlId}
+  :aria-selected={`activeId === '${id}'`}
+  :tabindex={`activeId !== '${id}' ? '-1' : null`}
+  {disabled}
+  @click={`set('${id}');`}
+  @keydown="onKeyDown"
+  class={className}
+  x-refs="tab"
+>
+  <slot />
+</button>

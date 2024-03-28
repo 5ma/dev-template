@@ -1,0 +1,84 @@
+---
+interface Props {
+  initialActiveId: string;
+  class?: {
+    container?: string;
+    tablist?: string;
+    panel?: string;
+  };
+}
+
+const { initialActiveId, class: className } = Astro.props;
+---
+
+<div x-data={`tabBase('${initialActiveId}')`} class={className?.container}>
+  <div role="tablist" class={className?.tablist} x-ref="tablist">
+    <slot name="tab" />
+  </div>
+  <div class={className?.panel}>
+    <slot name="panel" />
+  </div>
+</div>
+
+<script>
+  import Alpine from 'alpinejs';
+
+  Alpine.data('tabBase', (initialActiveId) => {
+    let tabs, firstTab, lastTab;
+    const moveFocusToTab = (tab: HTMLElement) => {
+      tab.focus();
+    };
+
+    return {
+      activeId: initialActiveId,
+      init() {
+        tabs = [...this.$refs.tablist.querySelectorAll('[x-refs="tab"]')];
+        firstTab = tabs.at(0);
+        lastTab = tabs.at(-1);
+      },
+      set(id: string) {
+        if (this.activeId === id) return;
+        this.activeId = id;
+      },
+      moveFocusToPreviousTab(currentTab: HTMLButtonElement) {
+        if (currentTab === firstTab) {
+          moveFocusToTab(lastTab);
+          return;
+        }
+
+        const index = tabs.indexOf(currentTab);
+        moveFocusToTab(tabs[index - 1]);
+      },
+      moveFocusToNextTab(currentTab: HTMLButtonElement) {
+        if (currentTab === lastTab) {
+          moveFocusToTab(firstTab);
+          return;
+        }
+
+        const index = tabs.indexOf(currentTab);
+        moveFocusToTab(tabs[index + 1]);
+      },
+      onKeyDown(event: KeyboardEvent) {
+        const target = event.currentTarget;
+        switch (event.key) {
+          case 'ArrowLeft':
+            event.preventDefault();
+            this.moveFocusToPreviousTab(target);
+            break;
+          case 'ArrowRight':
+            event.preventDefault();
+            this.moveFocusToNextTab(target);
+            break;
+          case 'Home':
+            event.preventDefault();
+            moveFocusToTab(firstTab);
+            break;
+          case 'End':
+            event.preventDefault();
+            moveFocusToTab(lastTab);
+            break;
+        }
+      },
+    };
+  });
+</script>
