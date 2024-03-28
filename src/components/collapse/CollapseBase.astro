@@ -44,7 +44,7 @@ const panelId = `${prefix}-panel-${collapseId}`;
   <div
     id={panelId}
     aria-labelledby={triggerId}
-    class:list={[durationClass, 'block overflow-hidden transition-[height] duration-500 ease-out']}
+    class:list={[durationClass, 'block overflow-clip transition-[height] duration-500 ease-out']}
     :class="{'h-0': !expanded, 'h-[--height]': expanded}"
     :style="{'--height': scrollHeight}"
     hidden="until-found"
