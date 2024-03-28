@@ -4,7 +4,7 @@ import type { HeadingTag } from '@/types/';
 
 interface Props {
   /** アコーディオン開閉時のduration(ms) */
-  duration?: number;
+  durationClass?: string;
   headingTag?: HeadingTag;
   /** id属性に付与するprefix名。例：prefix="faq" id="faq-trigger-1" */
   prefix?: string;
@@ -14,7 +14,7 @@ interface Props {
 }
 
 const {
-  duration = 500,
+  durationClass = 'duration-500',
   headingTag: Tag = 'h3',
   prefix = 'collapse',
   open = false,
@@ -26,7 +26,7 @@ const collapseId: string = uniqueId();
 // trigger Elementに付与するid属性
 const triggerId = `${prefix}-trigger-${collapseId}`;
 // content Elementに付与するid属性
-const contentId = `${prefix}-content-${collapseId}`;
+const panelId = `${prefix}-panel-${collapseId}`;
 ---
 
 <div class:list={[className, 'relative']} x-data={`collapse(${open})`}>
@@ -35,19 +35,24 @@ const contentId = `${prefix}-content-${collapseId}`;
       type="button"
       id={triggerId}
       @click="toggle"
-      :aria-expanded="expanded"
-      aria-controls={contentId}
+      :aria-expanded="expanded.toString()"
+      aria-controls={panelId}
     >
       <slot name="header" />
     </button>
   </Tag>
   <div
-    id={contentId}
+    id={panelId}
     aria-labelledby={triggerId}
-    x-show="expanded"
-    {...{ [`x-collapse.duration.${duration}ms`]: '' }}
+    class:list={[durationClass, 'block overflow-hidden transition-[height] duration-500 ease-out']}
+    :class="{'h-0': !expanded, 'h-[--height]': expanded}"
+    :style="{'--height': scrollHeight}"
+    hidden="until-found"
+    x-ref="panel"
   >
-    <slot name="contents" />
+    <div x-ref="panelInner">
+      <slot name="contents" />
+    </div>
   </div>
 </div>
 
@@ -55,10 +60,72 @@ const contentId = `${prefix}-content-${collapseId}`;
   import Alpine from 'alpinejs';
 
   Alpine.data('collapse', (open: boolean) => {
+    let isTransitioning = false; // アニメーション状態管理フラグ
+    let boundOnTransitionEnd; // イベントリスナーの参照を保持するための変数
+    let panelRef!: HTMLDivElement;
+
     return {
       expanded: open,
+      scrollHeight: '0px',
+      init() {
+        panelRef = this.$refs.panel;
+        if (!panelRef) return;
+
+        // サイト内検索でマッチした時のイベントリスナー
+        panelRef.addEventListener('beforematch', () => {
+          this.open();
+        });
+
+        this.setHeight();
+      },
+      setHeight() {
+        if (!this.$refs.panelInner) return;
+        this.scrollHeight = `${this.$refs.panelInner.scrollHeight}px`;
+      },
       toggle() {
-        this.expanded = !this.expanded;
+        this.expanded ? this.close() : this.open();
+      },
+      open() {
+        if (this.expanded || !panelRef) return;
+        if (isTransitioning) this.removeTransitionEndListener();
+
+        isTransitioning = true;
+        this.setHeight();
+
+        this.$nextTick(() => {
+          this.expanded = true;
+          panelRef.removeAttribute('hidden');
+          this.addTransitionEndListener();
+        });
+      },
+      close() {
+        if (!this.expanded || !panelRef) return;
+        if (isTransitioning) this.removeTransitionEndListener();
+
+        isTransitioning = true;
+        this.setHeight();
+
+        this.$nextTick(() => {
+          this.expanded = false;
+          this.addTransitionEndListener();
+        });
+      },
+      addTransitionEndListener() {
+        boundOnTransitionEnd = this.onTransitionEnd.bind(this);
+        panelRef.addEventListener('transitionend', boundOnTransitionEnd, { once: true });
+      },
+      removeTransitionEndListener() {
+        if (typeof boundOnTransitionEnd === 'function') {
+          panelRef.removeEventListener('transitionend', boundOnTransitionEnd);
+        }
+      },
+      onTransitionEnd() {
+        if (this.expanded) {
+          this.scrollHeight = 'auto';
+        } else {
+          panelRef.setAttribute('hidden', 'until-found');
+        }
+        isTransitioning = false;
       },
     };
   });
