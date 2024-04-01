@@ -1,0 +1,10 @@
+---
+interface Props {
+  path: string;
+}
+
+const { path } = Astro.props;
+const { default: inlineSvg } = await import(`../../assets${path}?raw`);
+---
+
+<Fragment set:html={inlineSvg} />

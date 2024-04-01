@@ -8,6 +8,8 @@ import AnchorBase from '@/components/anchor/AnchorBase.astro';
 import CollapseBase from '@/components/collapse/CollapseBase.astro';
 import PictureBase from '@/components/PictureBase.astro';
 import PictureResponsive from '@/components/PictureResponsive.astro';
+import SvgRaw from '@/components/svg/SvgRaw.astro';
+import SvgUse from '@/components/svg/SvgUse.astro';
 import TabBase from '@/components/tab/TabBase.astro';
 import TabButtonBase from '@/components/tab/TabButtonBase.astro';
 import TabPanelBase from '@/components/tab/TabPanelBase.astro';
@@ -28,9 +30,9 @@ const newsEntries = (await getCollection('news'))
 <Layout isHome tagline={title} description={description}>
   <main class="wrapper">
     <Hero title={title} description={description} />
-    <svg class="aspect-square w-full">
-      <use href={Sprite + '#nico'}></use>
-    </svg>
+    <SvgUse id="logo" viewBox="0 0 120 15" />
+
+    <SvgRaw path="/svg/file.svg" />
     <PictureBase src={img1} class="bg-pink-500" />
     <TabBase initialActiveId="label-1">
       <Fragment slot="tab">

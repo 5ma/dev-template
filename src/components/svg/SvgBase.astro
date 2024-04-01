@@ -1,0 +1,37 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+interface Props extends HTMLAttributes<'svg'> {
+  viewBox: `${number} ${number} ${number} ${number}`;
+  readable?: boolean;
+  label?: string;
+  children: any;
+}
+
+const { viewBox, readable = false, class: className, label, ...otherProps } = Astro.props;
+---
+
+{
+  readable ? (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      {viewBox}
+      role="img"
+      aria-label={label}
+      class={className}
+      {...otherProps}
+    >
+      <slot />
+    </svg>
+  ) : (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      {viewBox}
+      aria-hidden="true"
+      class={className}
+      {...otherProps}
+    >
+      <slot />
+    </svg>
+  )
+}
