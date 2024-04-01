@@ -3,8 +3,6 @@ import type { ComponentProps } from 'astro/types';
 import SvgBase from '@/components/svg/SvgBase.astro';
 import Sprite from '@/assets/svg/symbols.svg?url';
 
-console.log('Sprite', Sprite);
-
 interface Props extends ComponentProps<typeof SvgBase> {
   id: string;
 }
