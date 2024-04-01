@@ -19,7 +19,7 @@ const { id, controlId, disabled, class: className } = Astro.props;
   {disabled}
   @click={`set('${id}');`}
   @keydown="onKeyDown"
-  class={className}
+  class:list={[className, 'group/tab']}
   x-refs="tab"
 >
   <slot />

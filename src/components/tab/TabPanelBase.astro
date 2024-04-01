@@ -14,7 +14,7 @@ const { id, labelId, class: className } = Astro.props;
   {id}
   aria-labelledby={labelId}
   x-bind:hidden={`activeId !== '${labelId}'`}
-  class={className}
+  class:list={[className, 'group/tabpanel']}
 >
   <slot />
 </div>

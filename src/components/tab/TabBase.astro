@@ -22,12 +22,10 @@ const { initialActiveId, class: className } = Astro.props;
 
 <script>
   import Alpine from 'alpinejs';
+  import { moveFocusTo } from '@/scripts/_utils/tab-focus';
 
   Alpine.data('tabBase', (initialActiveId) => {
     let tabs, firstTab, lastTab;
-    const moveFocusToTab = (tab: HTMLElement) => {
-      tab.focus();
-    };
 
     return {
       activeId: initialActiveId,
@@ -42,21 +40,21 @@ const { initialActiveId, class: className } = Astro.props;
       },
       moveFocusToPreviousTab(currentTab: HTMLButtonElement) {
         if (currentTab === firstTab) {
-          moveFocusToTab(lastTab);
+          moveFocusTo(lastTab);
           return;
         }
 
         const index = tabs.indexOf(currentTab);
-        moveFocusToTab(tabs[index - 1]);
+        moveFocusTo(tabs[index - 1]);
       },
       moveFocusToNextTab(currentTab: HTMLButtonElement) {
         if (currentTab === lastTab) {
-          moveFocusToTab(firstTab);
+          moveFocusTo(firstTab);
           return;
         }
 
         const index = tabs.indexOf(currentTab);
-        moveFocusToTab(tabs[index + 1]);
+        moveFocusTo(tabs[index + 1]);
       },
       onKeyDown(event: KeyboardEvent) {
         const target = event.currentTarget;
@@ -71,11 +69,11 @@ const { initialActiveId, class: className } = Astro.props;
             break;
           case 'Home':
             event.preventDefault();
-            moveFocusToTab(firstTab);
+            moveFocusTo(firstTab);
             break;
           case 'End':
             event.preventDefault();
-            moveFocusToTab(lastTab);
+            moveFocusTo(lastTab);
             break;
         }
       },
